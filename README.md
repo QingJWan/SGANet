@@ -1,4 +1,6 @@
 # SGANet
+## Introduction
+
 Conventional sound event localization and detection (SELD)
 focuses on sound event detection (SED) and direction of
 arrival (DOA) estimation, which provide limited spatial information. The 3D SELD task addresses this limitation by
@@ -9,6 +11,7 @@ spectrum-based branch and pre-trained model-based branch.
 We design a multi-scale feature extraction (MSFE) module for the spectrum-based branch to capture rich acoustic
 information and a similarity-guided feature fusion (SGFF)
 module that includes a spatial feature transform (SFT) module for effective fusion of intermediate features from both
-branches.
+branches.SGA-Net achieves the best performance in all
+metrics on the STARSS23 dataset, verifying the effectiveness of SGA-Net.
 
 Once the article is accepted, we will release the code.
