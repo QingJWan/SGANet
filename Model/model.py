@@ -3,8 +3,8 @@ import torch.nn as nn
 import parameters
 from WFF import WeightedFeatureFusion
 from FD import FD
-from SFM1 import SelectiveFusionModule
-from MSAA31 import MSAA3
+from SFM import SelectiveFusionModule
+from MSAA import MSAA
 from conformer.conformer.encoder import ConformerBlock
 
 class SeldModel(torch.nn.Module):
@@ -51,7 +51,7 @@ class SeldModel(torch.nn.Module):
         self.FD3 = FD(cin=128, cout=256, K=(1, 1), S=(1, 1), P=(0, 0))
         self.glu = nn.GELU()
         self.dropout = nn.Dropout(p=0.05)
-        self.WFF3 = WeightedFeatureFusion(input_dim_x=256, input_dim_pooled=256)
+        self.WFF = WeightedFeatureFusion(input_dim_x=256, input_dim_pooled=256)
         self.sfm1 = SelectiveFusionModule(channels=64)
         self.sfm2 = SelectiveFusionModule(channels=128)
         self.sfm3 = SelectiveFusionModule(channels=256)
@@ -69,9 +69,9 @@ class SeldModel(torch.nn.Module):
             nn.BatchNorm2d(256, eps=0.001, momentum=0.99),
             nn.GELU()
         )
-        self.MSAA1 = MSAA3(in_channels=64, out_channels=64, num_inputs=1)
-        self.MSAA2 = MSAA3(in_channels=128, out_channels=128, num_inputs=2)
-        self.MSAA3 = MSAA3(in_channels=256, out_channels=256, num_inputs=3)
+        self.MSAA1 = MSAA(in_channels=64, out_channels=64, num_inputs=1)
+        self.MSAA2 = MSAA(in_channels=128, out_channels=128, num_inputs=2)
+        self.MSAA3 = MSAA(in_channels=256, out_channels=256, num_inputs=3)
         self.conformer_block = ConformerBlock(
             encoder_dim=256,
             num_attention_heads=8,
@@ -108,8 +108,8 @@ class SeldModel(torch.nn.Module):
         Y1= self.dropout(self.pool2(Y1))
         Y2 = self.match_conv8(self.sfm2(Y1,MSAA2 ))
         Y2 = self.dropout(self.pool3(Y2))
-        Y3 = self.sfm3(Y2 ,MSAA3)
-        Y3 =  self.WFF3(x3, Y3)
+        Y3 = self.sfm(Y2 ,MSAA3)
+        Y3 =  self.WFF(x3, Y3)
 
         Y3_3 = torch.mean(Y3, dim=3).permute(0, 2, 1)
 
