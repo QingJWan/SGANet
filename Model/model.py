@@ -3,7 +3,7 @@ import torch.nn as nn
 import parameters
 from WFF import WeightedFeatureFusion
 from FD import FD
-from SFM import SelectiveFusionModule
+from SGFF import SelectiveFusionModule
 from MSAA import MSAA
 from conformer.conformer.encoder import ConformerBlock
 
