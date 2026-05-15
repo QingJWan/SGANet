@@ -5,7 +5,7 @@ from WFF import WeightedFeatureFusion
 from FD import FD
 from SGFF import SelectiveFusionModule
 from MSFE import MSFE
-from conformer.conformer.encoder import ConformerBlock
+from conformer.encoder import ConformerBlock
 
 class SeldModel(torch.nn.Module):
     def __init__(self, in_feat_shape, out_shape, params, in_vid_feat_shape=None,p_dropout: float = 0.0):
