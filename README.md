@@ -1,6 +1,5 @@
-# SGANet
+# SGANet：A SIMILARITY-GUIDED AGGREGATION NETWORK FOR SOUND EVENT LOCALIZATION AND DETECTION WITH SOURCE DISTANCE ESTIMATION
 ## Introduction
-
 Conventional sound event localization and detection (SELD)
 focuses on sound event detection (SED) and direction of
 arrival (DOA) estimation, which provide limited spatial information. The 3D SELD task addresses this limitation by
@@ -14,4 +13,4 @@ module that includes a spatial feature transform (SFT) module for effective fusi
 branches.SGA-Net achieves the best performance in all
 metrics on the STARSS23 dataset, verifying the effectiveness of SGA-Net.
  
- ICASSP 2026 - 2026 IEEE International Conference on Acoustics, Speech and Signal Processing (ICASSP)
+ International Conference on Acoustics, Speech and Signal Processing (ICASSP) 2026
