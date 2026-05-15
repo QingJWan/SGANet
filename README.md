@@ -13,3 +13,5 @@ information and a similarity-guided feature fusion (SGFF)
 module that includes a spatial feature transform (SFT) module for effective fusion of intermediate features from both
 branches.SGA-Net achieves the best performance in all
 metrics on the STARSS23 dataset, verifying the effectiveness of SGA-Net.
+ 
+ ICASSP 2026 - 2026 IEEE International Conference on Acoustics, Speech and Signal Processing (ICASSP)
