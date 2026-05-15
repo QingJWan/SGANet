@@ -4,7 +4,7 @@ import parameters
 from WFF import WeightedFeatureFusion
 from FD import FD
 from SGFF import SelectiveFusionModule
-from MSAA import MSAA
+from MSFE import MSFE
 from conformer.conformer.encoder import ConformerBlock
 
 class SeldModel(torch.nn.Module):
@@ -52,9 +52,9 @@ class SeldModel(torch.nn.Module):
         self.glu = nn.GELU()
         self.dropout = nn.Dropout(p=0.05)
         self.WFF = WeightedFeatureFusion(input_dim_x=256, input_dim_pooled=256)
-        self.sfm1 = SelectiveFusionModule(channels=64)
-        self.sfm2 = SelectiveFusionModule(channels=128)
-        self.sfm3 = SelectiveFusionModule(channels=256)
+        self.SGFF1 = SelectiveFusionModule(channels=64)
+        self.SGFF2 = SelectiveFusionModule(channels=128)
+        self.SGFF3 = SelectiveFusionModule(channels=256)
         self.pool1 = nn.MaxPool2d([5, 2])
         self.pool2 = nn.MaxPool2d([1, 2])
         self.pool3=  nn.MaxPool2d([1, 2])
@@ -69,9 +69,9 @@ class SeldModel(torch.nn.Module):
             nn.BatchNorm2d(256, eps=0.001, momentum=0.99),
             nn.GELU()
         )
-        self.MSAA1 = MSAA(in_channels=64, out_channels=64, num_inputs=1)
-        self.MSAA2 = MSAA(in_channels=128, out_channels=128, num_inputs=2)
-        self.MSAA3 = MSAA(in_channels=256, out_channels=256, num_inputs=3)
+        self.MSFE1 = MSFE(in_channels=64, out_channels=64, num_inputs=1)
+        self.MSFE2 = MSFE(in_channels=128, out_channels=128, num_inputs=2)
+        self.MSFE3 = MSFE(in_channels=256, out_channels=256, num_inputs=3)
         self.conformer_block = ConformerBlock(
             encoder_dim=256,
             num_attention_heads=8,
@@ -95,20 +95,20 @@ class SeldModel(torch.nn.Module):
         x3 = self.bn3(x3)
         x3 = self.gelu3(x3)
         x3 = self.dropout(self.pool3(x3))
-        MSAA1 = self.MSAA1(x1)
+        MSAA1 = self.MSFE1(x1)
         x1_upsampled = self.pool2(self.FD1(x1))
-        MSAA2 = self.MSAA2(x2, x1_upsampled)
+        MSAA2 = self.MSFE2(x2, x1_upsampled)
         x1_upsampled =self.pool4(self.FD2(x1))
         x2_upsampled =self.pool3(self.FD3(x2))
-        MSAA3 = self.MSAA3(x3, x1_upsampled, x2_upsampled)
+        MSAA3 = self.MSFE3(x3, x1_upsampled, x2_upsampled)
         pre_feat = self.glu(self.linear_layer2(pre_feat))
         pre_feat1 = self.input1(pre_feat)
         pre_feat1= self.dropout(self.pool1(pre_feat1))
-        Y1 = self.match_conv4(self.sfm1(pre_feat1, MSAA1))
+        Y1 = self.match_conv4(self.SGFF1(pre_feat1, MSAA1))
         Y1= self.dropout(self.pool2(Y1))
-        Y2 = self.match_conv8(self.sfm2(Y1,MSAA2 ))
+        Y2 = self.match_conv8(self.SGFF2(Y1,MSAA2 ))
         Y2 = self.dropout(self.pool3(Y2))
-        Y3 = self.sfm(Y2 ,MSAA3)
+        Y3 = self.SGFF3(Y2 ,MSAA3)
         Y3 =  self.WFF(x3, Y3)
 
         Y3_3 = torch.mean(Y3, dim=3).permute(0, 2, 1)
